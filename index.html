@@ -37,12 +37,9 @@ body{display:flex;flex-direction:column;min-height:100vh}
   flex-shrink:0;
 }
 .header-left{display:flex;align-items:center;gap:20px}
-/* Mindor SVG logo */
 .logo-svg{height:26px;display:block}
 .h-sep{width:1px;height:22px;background:rgba(255,255,255,.1)}
-.h-meta{
-  display:flex;flex-direction:column;gap:1px;
-}
+.h-meta{display:flex;flex-direction:column;gap:1px}
 .h-client{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text)}
 .h-report{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .header-right{display:flex;align-items:center;gap:10px}
@@ -63,6 +60,18 @@ body{display:flex;flex-direction:column;min-height:100vh}
 /* ═══ LAYOUT ════════════════════════════════ */
 .body{flex:1;padding:28px 36px;display:flex;flex-direction:column;gap:20px}
 
+/* ═══ MONTH TABS ═════════════════════════════ */
+.month-tabs{display:flex;gap:6px;align-items:center}
+.month-tab{
+  font-family:var(--f-display);
+  font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--card);border:1px solid var(--border);border-radius:4px;
+  color:var(--muted);padding:6px 16px;cursor:pointer;transition:.15s;
+}
+.month-tab:hover{border-color:rgba(254,80,0,.3);color:var(--muted2)}
+.month-tab.active{background:var(--orange-dim);border-color:var(--border-o);color:var(--orange)}
+.tabs-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+
 /* ═══ KPI ROW ════════════════════════════════ */
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .kpi{
@@ -71,60 +80,35 @@ body{display:flex;flex-direction:column;min-height:100vh}
   border-top:2px solid var(--kc,var(--border));
   border-radius:6px;
   padding:18px 20px 16px;
-  position:relative;
-  overflow:hidden;
-  transition:.18s;
+  position:relative;overflow:hidden;transition:.18s;
 }
 .kpi:hover{border-color:var(--kc,var(--border));background:var(--card2)}
-.kpi-label{
-  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:10px;
-}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .kpi-val{
   font-family:var(--f-display);
   font-size:38px;font-weight:900;letter-spacing:-.01em;line-height:1;
   color:var(--kv,var(--text));
 }
 .kpi-val.sm{font-size:28px}
-.kpi-sub{
-  font-size:10px;font-weight:500;letter-spacing:.04em;
-  color:var(--muted);margin-top:8px;text-transform:uppercase;
-}
-/* corner mark */
+.kpi-sub{font-size:10px;font-weight:500;letter-spacing:.04em;color:var(--muted);margin-top:8px;text-transform:uppercase}
 .kpi::after{
-  content:'';
-  position:absolute;
-  right:-14px;bottom:-14px;
-  width:52px;height:52px;
-  background:var(--kc,transparent);
-  opacity:.06;
-  transform:rotate(15deg) skewX(-12deg);
+  content:'';position:absolute;right:-14px;bottom:-14px;
+  width:52px;height:52px;background:var(--kc,transparent);
+  opacity:.06;transform:rotate(15deg) skewX(-12deg);
 }
 
 /* ═══ CHARTS ROW ════════════════════════════ */
 .charts-row{display:grid;grid-template-columns:1fr 1fr 340px;gap:12px}
-.panel{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:20px;
-}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:20px}
 .panel-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
-.panel-title{
-  font-family:var(--f-display);
-  font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--text);
-}
+.panel-title{font-family:var(--f-display);font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text)}
 .panel-sub{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:3px}
 .canvas-wrap{position:relative}
 
-/* ANDAMENTO GAUGE */
+/* GAUGE */
 .gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 0 0}
 .gauge-svg-wrap{position:relative;width:180px;height:100px}
-.gauge-center{
-  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  text-align:center;
-}
+.gauge-center{position:absolute;bottom:0;left:50%;transform:translateX(-50%);text-align:center}
 .gauge-big{font-family:var(--f-display);font-size:36px;font-weight:900;color:var(--orange);line-height:1}
 .gauge-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
 .gauge-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;width:100%}
@@ -134,7 +118,6 @@ body{display:flex;flex-direction:column;min-height:100vh}
 
 /* META PROGRESS */
 .meta-block{margin-top:4px;display:flex;flex-direction:column;gap:14px}
-.meta-item{}
 .meta-item-head{display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;font-weight:600}
 .meta-name{color:var(--muted2);letter-spacing:.04em;text-transform:uppercase}
 .meta-num{color:var(--text);font-family:var(--f-display);font-size:14px;font-weight:800}
@@ -160,7 +143,6 @@ body{display:flex;flex-direction:column;min-height:100vh}
 <!-- HEADER -->
 <header class="header">
   <div class="header-left">
-    <!-- Mindor logo SVG inline -->
     <svg class="logo-svg" viewBox="0 0 1164 549" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0 330.524V547.706H219.897V437.758L111.306 330.524H0Z" fill="#FE5000"/>
       <path d="M111.306 0V225.327L429.614 547.706H652.225V330.524L331.203 0H111.306Z" fill="#FE5000"/>
@@ -174,75 +156,69 @@ body{display:flex;flex-direction:column;min-height:100vh}
   </div>
   <div class="header-right">
     <div class="h-live"><div class="live-dot"></div>Live</div>
-    <div class="h-month" id="hMonth">Março 2026</div>
+    <div class="h-month" id="hMonth">—</div>
   </div>
 </header>
 
 <!-- BODY -->
 <div class="body">
 
+  <!-- MONTH TABS -->
+  <div class="month-tabs" id="monthTabs">
+    <span class="tabs-label">Mês</span>
+  </div>
+
   <!-- KPI ROW 1 -->
   <div class="kpi-row">
-
     <div class="kpi" style="--kc:#FE5000">
       <div class="kpi-label">Meta de Vendas</div>
-      <div class="kpi-val" style="color:#FE5000">100</div>
+      <div class="kpi-val" style="color:#FE5000" id="kpi-meta">—</div>
       <div class="kpi-sub">Unidades · mês</div>
     </div>
-
     <div class="kpi" style="--kc:#00E676">
       <div class="kpi-label">Vendas</div>
-      <div class="kpi-val" style="color:#00E676">146</div>
+      <div class="kpi-val" style="color:#00E676" id="kpi-vendas">—</div>
       <div class="kpi-sub">Realizadas · mês</div>
     </div>
-
     <div class="kpi" style="--kc:#FE5000">
       <div class="kpi-label">Andamento</div>
-      <div class="kpi-val" style="color:#FE5000">146%</div>
+      <div class="kpi-val" style="color:#FE5000" id="kpi-andamento">—</div>
       <div class="kpi-sub">Da meta atingida</div>
     </div>
-
-    <div class="kpi" style="--kc:#00E676">
+    <div class="kpi" id="kpi-crescimento-card" style="--kc:#00E676">
       <div class="kpi-label">Crescimento</div>
-      <div class="kpi-val" style="color:#00E676">+95%</div>
+      <div class="kpi-val" id="kpi-crescimento">—</div>
       <div class="kpi-sub">vs. mês anterior</div>
     </div>
-
   </div>
 
   <!-- KPI ROW 2 -->
   <div class="kpi-row">
-
     <div class="kpi" style="--kc:#888">
       <div class="kpi-label">Investimento</div>
-      <div class="kpi-val sm">R$9.047</div>
+      <div class="kpi-val sm" id="kpi-investimento">—</div>
       <div class="kpi-sub">Total aplicado</div>
     </div>
-
     <div class="kpi" style="--kc:#00E676">
       <div class="kpi-label">Faturamento</div>
-      <div class="kpi-val sm" style="color:#00E676">R$66.630</div>
+      <div class="kpi-val sm" style="color:#00E676" id="kpi-faturamento">—</div>
       <div class="kpi-sub">Receita gerada</div>
     </div>
-
     <div class="kpi" style="--kc:#FE5000">
       <div class="kpi-label">Custo por Venda</div>
-      <div class="kpi-val sm" style="color:#FE5000">R$126</div>
+      <div class="kpi-val sm" style="color:#FE5000" id="kpi-cac">—</div>
       <div class="kpi-sub">CAC médio</div>
     </div>
-
     <div class="kpi" style="--kc:#888">
       <div class="kpi-label">Ticket Médio</div>
-      <div class="kpi-val sm">R$858</div>
+      <div class="kpi-val sm" id="kpi-ticket">—</div>
       <div class="kpi-sub">Por venda</div>
     </div>
-
   </div>
 
   <!-- CHARTS ROW -->
   <div class="charts-row">
 
-    <!-- Vendas por mês -->
     <div class="panel">
       <div class="panel-head">
         <div>
@@ -252,11 +228,10 @@ body{display:flex;flex-direction:column;min-height:100vh}
       </div>
       <div class="orange-rule"></div>
       <div class="canvas-wrap" style="height:180px">
-        <canvas id="vendasChart" role="img" aria-label="Vendas mensais 2026"></canvas>
+        <canvas id="vendasChart"></canvas>
       </div>
     </div>
 
-    <!-- Faturamento por mês -->
     <div class="panel">
       <div class="panel-head">
         <div>
@@ -266,11 +241,10 @@ body{display:flex;flex-direction:column;min-height:100vh}
       </div>
       <div class="orange-rule"></div>
       <div class="canvas-wrap" style="height:180px">
-        <canvas id="fatChart" role="img" aria-label="Faturamento mensal 2026"></canvas>
+        <canvas id="fatChart"></canvas>
       </div>
     </div>
 
-    <!-- Andamento gauge + metas -->
     <div class="panel">
       <div class="panel-head">
         <div>
@@ -283,26 +257,23 @@ body{display:flex;flex-direction:column;min-height:100vh}
       <div class="gauge-wrap">
         <div class="gauge-svg-wrap">
           <svg viewBox="0 0 180 100" width="180" height="100">
-            <!-- track -->
             <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#1e1e1e" stroke-width="14" stroke-linecap="round"/>
-            <!-- fill — 146% of 100 means full + overflow, cap at arc -->
-            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#FE5000" stroke-width="14" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="0"/>
-            <!-- meta tick at 100% = center top -->
+            <path id="gaugeArc" d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#FE5000" stroke-width="14" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
             <line x1="90" y1="10" x2="90" y2="22" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
           </svg>
           <div class="gauge-center">
-            <div class="gauge-big">146%</div>
+            <div class="gauge-big" id="gaugePct">—</div>
             <div class="gauge-label">Meta atingida</div>
           </div>
         </div>
 
         <div class="gauge-stats">
           <div class="gstat">
-            <div class="gstat-val" style="color:#00E676">146</div>
+            <div class="gstat-val" style="color:#00E676" id="gaugeVendas">—</div>
             <div class="gstat-label">Vendas</div>
           </div>
           <div class="gstat">
-            <div class="gstat-val" style="color:#FE5000">100</div>
+            <div class="gstat-val" style="color:#FE5000" id="gaugeMeta">—</div>
             <div class="gstat-label">Meta</div>
           </div>
         </div>
@@ -310,24 +281,24 @@ body{display:flex;flex-direction:column;min-height:100vh}
         <div class="meta-block" style="width:100%;margin-top:16px">
           <div class="meta-item">
             <div class="meta-item-head">
-              <span class="meta-name">Faturamento vs meta</span>
-              <span class="meta-num" style="color:#00E676">7.4x</span>
+              <span class="meta-name">ROI (fat / invest.)</span>
+              <span class="meta-num" id="barRoiVal" style="color:#00E676">—</span>
             </div>
-            <div class="bar-track"><div class="bar-fill" style="width:100%;background:#00E676"></div></div>
+            <div class="bar-track"><div class="bar-fill" id="barRoi" style="width:0%;background:#00E676"></div></div>
           </div>
           <div class="meta-item">
             <div class="meta-item-head">
-              <span class="meta-name">Invest. eficiência</span>
-              <span class="meta-num" style="color:#FE5000">7.4x</span>
+              <span class="meta-name">Andamento da meta</span>
+              <span class="meta-num" id="barAndamentoVal" style="color:#FE5000">—</span>
             </div>
-            <div class="bar-track"><div class="bar-fill" style="width:74%;background:#FE5000"></div></div>
+            <div class="bar-track"><div class="bar-fill" id="barAndamento" style="width:0%;background:#FE5000"></div></div>
           </div>
           <div class="meta-item">
             <div class="meta-item-head">
-              <span class="meta-name">Crescimento YoY</span>
-              <span class="meta-num">95%</span>
+              <span class="meta-name">Crescimento MoM</span>
+              <span class="meta-num" id="barCrescimentoVal">—</span>
             </div>
-            <div class="bar-track"><div class="bar-fill" style="width:95%;background:rgba(255,255,255,.25)"></div></div>
+            <div class="bar-track"><div class="bar-fill" id="barCrescimento" style="width:0%;background:rgba(255,255,255,.25)"></div></div>
           </div>
         </div>
       </div>
@@ -351,86 +322,194 @@ body{display:flex;flex-direction:column;min-height:100vh}
 </footer>
 
 <script>
+const SHEET_ID = '1gZ6AJtYBEvLgYh5poWkUPbJ2gcrejFW3qS8bUme7sjs';
+const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=RESUMO`;
+
+const MES_NAMES = {
+  JAN:'Janeiro',FEV:'Fevereiro',MAR:'Março',ABR:'Abril',
+  MAI:'Maio',JUN:'Junho',JUL:'Julho',AGO:'Agosto',
+  SET:'Setembro',OUT:'Outubro',NOV:'Novembro',DEZ:'Dezembro'
+};
+
+function parseCSV(text) {
+  return text.trim().split('\n').map(line => {
+    const fields = [];
+    let inQ = false, f = '';
+    for (const c of line) {
+      if (c === '"') { inQ = !inQ; continue; }
+      if (c === ',' && !inQ) { fields.push(f.trim()); f = ''; continue; }
+      f += c;
+    }
+    fields.push(f.trim());
+    return fields;
+  });
+}
+
+function parseBRL(s) {
+  if (!s) return 0;
+  return parseFloat(s.replace('R$','').replace(/\./g,'').replace(',','.').trim()) || 0;
+}
+function parsePct(s) {
+  if (!s) return 0;
+  return parseFloat(s.replace('%','').replace(',','.').trim()) || 0;
+}
+function fmtBRL(v) {
+  return 'R$' + Math.round(v).toLocaleString('pt-BR');
+}
+
 Chart.defaults.color = '#666';
 Chart.defaults.borderColor = 'rgba(255,255,255,.05)';
 Chart.defaults.font.family = "'Barlow', sans-serif";
 Chart.defaults.font.size = 11;
 Chart.defaults.font.weight = '600';
 
-const meses = ['JAN','FEV','MAR','ABR'];
-const vendas = [56, 75, 146, 30];
-const fat    = [10425.79, 15863.69, 33389.81, 6951.44];
-
-const tooltipDefaults = {
-  backgroundColor:'#1a1a1a',
-  titleColor:'#F2F2F2',
-  bodyColor:'#999',
-  borderColor:'rgba(254,80,0,.3)',
-  borderWidth:1,
-  padding:10,
-  cornerRadius:4,
+const tooltipDef = {
+  backgroundColor:'#1a1a1a',titleColor:'#F2F2F2',bodyColor:'#999',
+  borderColor:'rgba(254,80,0,.3)',borderWidth:1,padding:10,cornerRadius:4,
 };
 
-/* VENDAS */
-new Chart(document.getElementById('vendasChart'), {
-  type: 'bar',
-  data: {
-    labels: meses,
-    datasets: [{
-      data: vendas,
-      backgroundColor: ['rgba(254,80,0,.25)','rgba(254,80,0,.25)','#FE5000','rgba(254,80,0,.15)'],
-      borderColor:     ['rgba(254,80,0,.5)', 'rgba(254,80,0,.5)', '#FE5000','rgba(254,80,0,.3)'],
-      borderWidth: 1,
-      borderRadius: 3,
-    }]
-  },
-  options: {
-    responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{...tooltipDefaults, callbacks:{label:ctx=>' '+ctx.parsed.y+' vendas'}},
-    },
-    scales:{
-      x:{grid:{display:false}, ticks:{color:'#666'}},
-      y:{grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#666'}, beginAtZero:true},
-    }
-  }
-});
+let vendasChart, fatChart;
 
-/* FATURAMENTO */
-new Chart(document.getElementById('fatChart'), {
-  type: 'bar',
-  data: {
-    labels: meses,
-    datasets: [{
-      data: fat,
-      backgroundColor: ['rgba(0,230,118,.15)','rgba(0,230,118,.15)','#00E676','rgba(0,230,118,.1)'],
-      borderColor:     ['rgba(0,230,118,.4)', 'rgba(0,230,118,.4)', '#00E676','rgba(0,230,118,.2)'],
-      borderWidth: 1,
-      borderRadius: 3,
-    }]
-  },
-  options: {
-    responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{...tooltipDefaults, callbacks:{label:ctx=>' R$'+ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:2})}},
-    },
-    scales:{
-      x:{grid:{display:false}, ticks:{color:'#666'}},
-      y:{grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#666', callback:v=>'R$'+Math.round(v/1000)+'k'}, beginAtZero:true},
-    }
-  }
-});
+function buildCharts(months, activeIdx) {
+  const labels = months.map(r => r[0]);
+  const vendas = months.map(r => parseInt(r[2]) || 0);
+  const fat    = months.map(r => parseBRL(r[5]));
 
-/* timestamp */
-function tick(){
+  const vBg = months.map((_, i) => i === activeIdx ? '#FE5000' : 'rgba(254,80,0,.2)');
+  const vBd = months.map((_, i) => i === activeIdx ? '#FE5000' : 'rgba(254,80,0,.4)');
+  const fBg = months.map((_, i) => i === activeIdx ? '#00E676' : 'rgba(0,230,118,.12)');
+  const fBd = months.map((_, i) => i === activeIdx ? '#00E676' : 'rgba(0,230,118,.35)');
+
+  if (vendasChart) vendasChart.destroy();
+  if (fatChart)    fatChart.destroy();
+
+  vendasChart = new Chart(document.getElementById('vendasChart'), {
+    type:'bar',
+    data:{labels,datasets:[{data:vendas,backgroundColor:vBg,borderColor:vBd,borderWidth:1,borderRadius:3}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{...tooltipDef,callbacks:{label:c=>' '+c.parsed.y+' vendas'}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#666'}},
+        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#666'},beginAtZero:true},
+      }
+    }
+  });
+
+  fatChart = new Chart(document.getElementById('fatChart'), {
+    type:'bar',
+    data:{labels,datasets:[{data:fat,backgroundColor:fBg,borderColor:fBd,borderWidth:1,borderRadius:3}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{...tooltipDef,callbacks:{label:c=>' R$'+c.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:2})}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#666'}},
+        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#666',callback:v=>'R$'+Math.round(v/1000)+'k'},beginAtZero:true},
+      }
+    }
+  });
+}
+
+function renderKPIs(row) {
+  const vendas    = parseInt(row[2]) || 0;
+  const investBRL = parseBRL(row[3]);
+  const cacBRL    = parseBRL(row[4]);
+  const fatBRL    = parseBRL(row[5]);
+  const meta      = parseInt(row[6]) || 100;
+  const andPct    = parsePct(row[8]);
+  const ticketBRL = parseBRL(row[9]);
+  const crescPct  = parsePct(row[10]);
+
+  document.getElementById('hMonth').textContent = (MES_NAMES[row[0]] || row[0]) + ' 2026';
+
+  document.getElementById('kpi-meta').textContent      = meta;
+  document.getElementById('kpi-vendas').textContent    = vendas;
+  document.getElementById('kpi-andamento').textContent = row[8] || '0%';
+
+  const crescEl   = document.getElementById('kpi-crescimento');
+  const crescCard = document.getElementById('kpi-crescimento-card');
+  if (crescPct >= 0) {
+    crescEl.style.color = '#00E676';
+    crescCard.style.setProperty('--kc','#00E676');
+    crescEl.textContent = '+' + row[10];
+  } else {
+    crescEl.style.color = '#FF3D3D';
+    crescCard.style.setProperty('--kc','#FF3D3D');
+    crescEl.textContent = row[10];
+  }
+
+  document.getElementById('kpi-investimento').textContent = fmtBRL(investBRL);
+  document.getElementById('kpi-faturamento').textContent  = fmtBRL(fatBRL);
+  document.getElementById('kpi-cac').textContent          = cacBRL ? fmtBRL(cacBRL) : '—';
+  document.getElementById('kpi-ticket').textContent       = ticketBRL ? fmtBRL(ticketBRL) : '—';
+
+  const pctCapped = Math.min(andPct, 100);
+  document.getElementById('gaugeArc').setAttribute('stroke-dashoffset', 251.2 * (1 - pctCapped / 100));
+  document.getElementById('gaugePct').textContent    = row[8] || '0%';
+  document.getElementById('gaugeVendas').textContent = vendas;
+  document.getElementById('gaugeMeta').textContent   = meta;
+
+  const roi    = investBRL > 0 ? fatBRL / investBRL : 0;
+  const roiStr = roi > 0 ? roi.toFixed(1) + 'x' : '—';
+  document.getElementById('barRoiVal').textContent = roiStr;
+  document.getElementById('barRoi').style.width    = Math.min(roi / 15 * 100, 100) + '%';
+
+  document.getElementById('barAndamentoVal').textContent = row[8] || '0%';
+  document.getElementById('barAndamento').style.width    = Math.min(andPct, 100) + '%';
+
+  const crescAbs   = Math.abs(crescPct);
+  const crescColor = crescPct >= 0 ? '#00E676' : '#FF3D3D';
+  document.getElementById('barCrescimentoVal').textContent   = row[10] || '0%';
+  document.getElementById('barCrescimentoVal').style.color   = crescColor;
+  document.getElementById('barCrescimento').style.width      = Math.min(crescAbs, 100) + '%';
+  document.getElementById('barCrescimento').style.background = crescColor;
+}
+
+let allMonths = [], activeIdx = 0;
+
+function renderTabs() {
+  const container = document.getElementById('monthTabs');
+  container.innerHTML = '<span class="tabs-label">Mês</span>';
+  allMonths.forEach((row, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'month-tab' + (i === activeIdx ? ' active' : '');
+    btn.textContent = row[0];
+    btn.onclick = () => {
+      activeIdx = i;
+      renderTabs();
+      renderKPIs(allMonths[i]);
+      buildCharts(allMonths, i);
+    };
+    container.appendChild(btn);
+  });
+}
+
+async function init() {
+  const res  = await fetch(CSV_URL);
+  const text = await res.text();
+  const rows = parseCSV(text);
+
+  allMonths = rows.slice(1).filter(r =>
+    r[0] && r[0] !== 'NÃO MEXER' && r[0].trim() !== '' && parseInt(r[2]) > 0
+  );
+
+  if (!allMonths.length) return;
+
+  activeIdx = allMonths.length - 1;
+  renderTabs();
+  renderKPIs(allMonths[activeIdx]);
+  buildCharts(allMonths, activeIdx);
+}
+
+init();
+
+function tick() {
   const n = new Date();
   document.getElementById('ts').textContent =
     n.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})
     +' · '+n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 }
-tick(); setInterval(tick,60000);
+tick(); setInterval(tick, 60000);
 </script>
 </body>
 </html>
