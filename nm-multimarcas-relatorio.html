@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NM Multimarcas — Relatório Mindor</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#FE5000;
+  --orange-dim:rgba(254,80,0,.12);
+  --orange-mid:rgba(254,80,0,.22);
+  --bg:#080808;
+  --card:#111111;
+  --card2:#161616;
+  --border:rgba(255,255,255,.06);
+  --border-o:rgba(254,80,0,.2);
+  --text:#F2F2F2;
+  --muted:#666;
+  --muted2:#999;
+  --green:#00E676;
+  --red:#FF3D3D;
+  --f-display:'Barlow Condensed',sans-serif;
+  --f-body:'Barlow',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f-body)}
+body{display:flex;flex-direction:column;min-height:100vh}
+
+/* ═══ HEADER ════════════════════════════════ */
+.header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 36px;
+  border-bottom:1px solid var(--border);
+  background:#0a0a0a;
+  flex-shrink:0;
+}
+.header-left{display:flex;align-items:center;gap:20px}
+/* Mindor SVG logo */
+.logo-svg{height:26px;display:block}
+.h-sep{width:1px;height:22px;background:rgba(255,255,255,.1)}
+.h-meta{
+  display:flex;flex-direction:column;gap:1px;
+}
+.h-client{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text)}
+.h-report{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.header-right{display:flex;align-items:center;gap:10px}
+.h-month{
+  font-family:var(--f-display);
+  font-size:13px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--orange);
+  background:var(--orange-dim);
+  border:1px solid var(--border-o);
+  border-radius:4px;
+  padding:6px 14px;
+}
+.h-live{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--green);letter-spacing:.04em;text-transform:uppercase}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+/* ═══ LAYOUT ════════════════════════════════ */
+.body{flex:1;padding:28px 36px;display:flex;flex-direction:column;gap:20px}
+
+/* ═══ KPI ROW ════════════════════════════════ */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-top:2px solid var(--kc,var(--border));
+  border-radius:6px;
+  padding:18px 20px 16px;
+  position:relative;
+  overflow:hidden;
+  transition:.18s;
+}
+.kpi:hover{border-color:var(--kc,var(--border));background:var(--card2)}
+.kpi-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;
+}
+.kpi-val{
+  font-family:var(--f-display);
+  font-size:38px;font-weight:900;letter-spacing:-.01em;line-height:1;
+  color:var(--kv,var(--text));
+}
+.kpi-val.sm{font-size:28px}
+.kpi-sub{
+  font-size:10px;font-weight:500;letter-spacing:.04em;
+  color:var(--muted);margin-top:8px;text-transform:uppercase;
+}
+/* corner mark */
+.kpi::after{
+  content:'';
+  position:absolute;
+  right:-14px;bottom:-14px;
+  width:52px;height:52px;
+  background:var(--kc,transparent);
+  opacity:.06;
+  transform:rotate(15deg) skewX(-12deg);
+}
+
+/* ═══ CHARTS ROW ════════════════════════════ */
+.charts-row{display:grid;grid-template-columns:1fr 1fr 340px;gap:12px}
+.panel{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:20px;
+}
+.panel-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.panel-title{
+  font-family:var(--f-display);
+  font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text);
+}
+.panel-sub{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.canvas-wrap{position:relative}
+
+/* ANDAMENTO GAUGE */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 0 0}
+.gauge-svg-wrap{position:relative;width:180px;height:100px}
+.gauge-center{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  text-align:center;
+}
+.gauge-big{font-family:var(--f-display);font-size:36px;font-weight:900;color:var(--orange);line-height:1}
+.gauge-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.gauge-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;width:100%}
+.gstat{background:var(--card2);border:1px solid var(--border);border-radius:4px;padding:12px 14px;text-align:center}
+.gstat-val{font-family:var(--f-display);font-size:22px;font-weight:800;line-height:1;color:var(--text)}
+.gstat-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+/* META PROGRESS */
+.meta-block{margin-top:4px;display:flex;flex-direction:column;gap:14px}
+.meta-item{}
+.meta-item-head{display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;font-weight:600}
+.meta-name{color:var(--muted2);letter-spacing:.04em;text-transform:uppercase}
+.meta-num{color:var(--text);font-family:var(--f-display);font-size:14px;font-weight:800}
+.bar-track{height:5px;background:#1e1e1e;border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:.6s ease}
+
+/* ORANGE LINE */
+.orange-rule{height:1px;background:var(--border);position:relative;margin:2px 0 18px}
+.orange-rule::after{content:'';position:absolute;left:0;top:0;width:60px;height:1px;background:var(--orange)}
+
+/* ═══ FOOTER ════════════════════════════════ */
+.footer{
+  flex-shrink:0;padding:10px 36px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+}
+.footer-left{display:flex;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <!-- Mindor logo SVG inline -->
+    <svg class="logo-svg" viewBox="0 0 1164 549" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 330.524V547.706H219.897V437.758L111.306 330.524H0Z" fill="#FE5000"/>
+      <path d="M111.306 0V225.327L429.614 547.706H652.225V330.524L331.203 0H111.306Z" fill="#FE5000"/>
+      <path d="M622.363 0.678711V226.005L940.671 548.385H1163.28V331.203L842.26 0.678711H622.363Z" fill="#FE5000"/>
+    </svg>
+    <div class="h-sep"></div>
+    <div class="h-meta">
+      <div class="h-client">NM Multimarcas</div>
+      <div class="h-report">Tráfego e Vendas · 2026</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="h-live"><div class="live-dot"></div>Live</div>
+    <div class="h-month" id="hMonth">Março 2026</div>
+  </div>
+</header>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- KPI ROW 1 -->
+  <div class="kpi-row">
+
+    <div class="kpi" style="--kc:#FE5000">
+      <div class="kpi-label">Meta de Vendas</div>
+      <div class="kpi-val" style="color:#FE5000">100</div>
+      <div class="kpi-sub">Unidades · mês</div>
+    </div>
+
+    <div class="kpi" style="--kc:#00E676">
+      <div class="kpi-label">Vendas</div>
+      <div class="kpi-val" style="color:#00E676">146</div>
+      <div class="kpi-sub">Realizadas · mês</div>
+    </div>
+
+    <div class="kpi" style="--kc:#FE5000">
+      <div class="kpi-label">Andamento</div>
+      <div class="kpi-val" style="color:#FE5000">146%</div>
+      <div class="kpi-sub">Da meta atingida</div>
+    </div>
+
+    <div class="kpi" style="--kc:#00E676">
+      <div class="kpi-label">Crescimento</div>
+      <div class="kpi-val" style="color:#00E676">+95%</div>
+      <div class="kpi-sub">vs. mês anterior</div>
+    </div>
+
+  </div>
+
+  <!-- KPI ROW 2 -->
+  <div class="kpi-row">
+
+    <div class="kpi" style="--kc:#888">
+      <div class="kpi-label">Investimento</div>
+      <div class="kpi-val sm">R$9.047</div>
+      <div class="kpi-sub">Total aplicado</div>
+    </div>
+
+    <div class="kpi" style="--kc:#00E676">
+      <div class="kpi-label">Faturamento</div>
+      <div class="kpi-val sm" style="color:#00E676">R$66.630</div>
+      <div class="kpi-sub">Receita gerada</div>
+    </div>
+
+    <div class="kpi" style="--kc:#FE5000">
+      <div class="kpi-label">Custo por Venda</div>
+      <div class="kpi-val sm" style="color:#FE5000">R$126</div>
+      <div class="kpi-sub">CAC médio</div>
+    </div>
+
+    <div class="kpi" style="--kc:#888">
+      <div class="kpi-label">Ticket Médio</div>
+      <div class="kpi-val sm">R$858</div>
+      <div class="kpi-sub">Por venda</div>
+    </div>
+
+  </div>
+
+  <!-- CHARTS ROW -->
+  <div class="charts-row">
+
+    <!-- Vendas por mês -->
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Vendas por Mês</div>
+          <div class="panel-sub">2026 · acumulado</div>
+        </div>
+      </div>
+      <div class="orange-rule"></div>
+      <div class="canvas-wrap" style="height:180px">
+        <canvas id="vendasChart" role="img" aria-label="Vendas mensais 2026"></canvas>
+      </div>
+    </div>
+
+    <!-- Faturamento por mês -->
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Faturamento</div>
+          <div class="panel-sub">2026 · R$ acumulado</div>
+        </div>
+      </div>
+      <div class="orange-rule"></div>
+      <div class="canvas-wrap" style="height:180px">
+        <canvas id="fatChart" role="img" aria-label="Faturamento mensal 2026"></canvas>
+      </div>
+    </div>
+
+    <!-- Andamento gauge + metas -->
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Performance</div>
+          <div class="panel-sub">Andamento da meta</div>
+        </div>
+      </div>
+      <div class="orange-rule"></div>
+
+      <div class="gauge-wrap">
+        <div class="gauge-svg-wrap">
+          <svg viewBox="0 0 180 100" width="180" height="100">
+            <!-- track -->
+            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#1e1e1e" stroke-width="14" stroke-linecap="round"/>
+            <!-- fill — 146% of 100 means full + overflow, cap at arc -->
+            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#FE5000" stroke-width="14" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="0"/>
+            <!-- meta tick at 100% = center top -->
+            <line x1="90" y1="10" x2="90" y2="22" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-big">146%</div>
+            <div class="gauge-label">Meta atingida</div>
+          </div>
+        </div>
+
+        <div class="gauge-stats">
+          <div class="gstat">
+            <div class="gstat-val" style="color:#00E676">146</div>
+            <div class="gstat-label">Vendas</div>
+          </div>
+          <div class="gstat">
+            <div class="gstat-val" style="color:#FE5000">100</div>
+            <div class="gstat-label">Meta</div>
+          </div>
+        </div>
+
+        <div class="meta-block" style="width:100%;margin-top:16px">
+          <div class="meta-item">
+            <div class="meta-item-head">
+              <span class="meta-name">Faturamento vs meta</span>
+              <span class="meta-num" style="color:#00E676">7.4x</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:100%;background:#00E676"></div></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-item-head">
+              <span class="meta-name">Invest. eficiência</span>
+              <span class="meta-num" style="color:#FE5000">7.4x</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:74%;background:#FE5000"></div></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-item-head">
+              <span class="meta-name">Crescimento YoY</span>
+              <span class="meta-num">95%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:95%;background:rgba(255,255,255,.25)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-left">
+    <svg height="14" viewBox="0 0 1164 549" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 330.524V547.706H219.897V437.758L111.306 330.524H0Z" fill="#FE5000"/>
+      <path d="M111.306 0V225.327L429.614 547.706H652.225V330.524L331.203 0H111.306Z" fill="#FE5000"/>
+      <path d="M622.363 0.678711V226.005L940.671 548.385H1163.28V331.203L842.26 0.678711H622.363Z" fill="#FE5000"/>
+    </svg>
+    Mindor · Relatório NM Multimarcas
+  </div>
+  <span id="ts"></span>
+</footer>
+
+<script>
+Chart.defaults.color = '#666';
+Chart.defaults.borderColor = 'rgba(255,255,255,.05)';
+Chart.defaults.font.family = "'Barlow', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.font.weight = '600';
+
+const meses = ['JAN','FEV','MAR','ABR'];
+const vendas = [56, 75, 146, 30];
+const fat    = [10425.79, 15863.69, 33389.81, 6951.44];
+
+const tooltipDefaults = {
+  backgroundColor:'#1a1a1a',
+  titleColor:'#F2F2F2',
+  bodyColor:'#999',
+  borderColor:'rgba(254,80,0,.3)',
+  borderWidth:1,
+  padding:10,
+  cornerRadius:4,
+};
+
+/* VENDAS */
+new Chart(document.getElementById('vendasChart'), {
+  type: 'bar',
+  data: {
+    labels: meses,
+    datasets: [{
+      data: vendas,
+      backgroundColor: ['rgba(254,80,0,.25)','rgba(254,80,0,.25)','#FE5000','rgba(254,80,0,.15)'],
+      borderColor:     ['rgba(254,80,0,.5)', 'rgba(254,80,0,.5)', '#FE5000','rgba(254,80,0,.3)'],
+      borderWidth: 1,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tooltipDefaults, callbacks:{label:ctx=>' '+ctx.parsed.y+' vendas'}},
+    },
+    scales:{
+      x:{grid:{display:false}, ticks:{color:'#666'}},
+      y:{grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#666'}, beginAtZero:true},
+    }
+  }
+});
+
+/* FATURAMENTO */
+new Chart(document.getElementById('fatChart'), {
+  type: 'bar',
+  data: {
+    labels: meses,
+    datasets: [{
+      data: fat,
+      backgroundColor: ['rgba(0,230,118,.15)','rgba(0,230,118,.15)','#00E676','rgba(0,230,118,.1)'],
+      borderColor:     ['rgba(0,230,118,.4)', 'rgba(0,230,118,.4)', '#00E676','rgba(0,230,118,.2)'],
+      borderWidth: 1,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tooltipDefaults, callbacks:{label:ctx=>' R$'+ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:2})}},
+    },
+    scales:{
+      x:{grid:{display:false}, ticks:{color:'#666'}},
+      y:{grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#666', callback:v=>'R$'+Math.round(v/1000)+'k'}, beginAtZero:true},
+    }
+  }
+});
+
+/* timestamp */
+function tick(){
+  const n = new Date();
+  document.getElementById('ts').textContent =
+    n.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})
+    +' · '+n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+tick(); setInterval(tick,60000);
+</script>
+</body>
+</html>
