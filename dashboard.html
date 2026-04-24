@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Mindor</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#FE5000;--orange10:rgba(254,80,0,.08);--orange20:rgba(254,80,0,.15);
+  --green:#16A34A;--green10:rgba(22,163,74,.08);
+  --red:#DC2626;--red10:rgba(220,38,38,.08);
+  --bg:#F8F7F5;--surface:#fff;--border:#E8E8E5;--border2:#D4D4CF;
+  --text:#0F0F0E;--muted:#6B7280;--muted2:#9CA3AF;
+  --radius:14px;--rsm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.07);
+  --fd:'Space Grotesk',sans-serif;--fb:'Outfit',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fb)}
+body{display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
+
+.wm{position:fixed;right:-100px;bottom:-60px;width:520px;pointer-events:none;z-index:0;opacity:.04}
+
+/* HEADER */
+.header{position:relative;z-index:10;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 36px;display:flex;align-items:center;gap:16px}
+.back{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--border);border-radius:6px;transition:.15s;flex-shrink:0}
+.back:hover{border-color:var(--border2);color:var(--text)}
+.back svg{width:12px;height:12px}
+.hsep{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.logo{height:20px;display:block;flex-shrink:0}
+.hclient{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text)}
+.hperiod{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2);margin-top:1px}
+.hright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--green);background:var(--green10);border:1px solid rgba(22,163,74,.18);border-radius:99px;padding:4px 10px}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.mbadge{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;background:var(--orange);border-radius:7px;padding:5px 12px;white-space:nowrap}
+
+/* VIEW TOGGLE */
+.view-toggle{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px}
+.vtab{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 16px;border-radius:6px;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:.15s}
+.vtab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.vtab:hover:not(.active){color:var(--text)}
+
+/* BODY */
+.body{position:relative;z-index:1;flex:1;padding:22px 36px 20px;display:flex;flex-direction:column;gap:14px}
+
+/* MONTH TABS */
+.tabs-row{display:flex;align-items:center;gap:6px}
+.tl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-right:2px}
+.mtab{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);color:var(--muted);padding:5px 14px;cursor:pointer;transition:.15s}
+.mtab:hover{border-color:rgba(254,80,0,.3);color:var(--orange)}
+.mtab.active{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(254,80,0,.22)}
+
+/* KPI GRID */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px 14px;position:relative;overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .2s,transform .2s}
+.kpi:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--border))}
+.ki{width:30px;height:30px;border-radius:8px;background:var(--kbg,#F0EFED);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.ki svg{width:14px;height:14px}
+.kl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.kv{font-family:var(--fd);font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1;color:var(--kcolor,var(--text))}
+.kv.sm{font-size:22px}
+.ks{font-size:10px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted2);margin-top:5px}
+
+/* CHARTS */
+.chart-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.ph{margin-bottom:14px}
+.pt{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text)}
+.ps{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);margin-top:2px}
+.div{height:1px;background:var(--border);margin-bottom:14px;position:relative}
+.div::after{content:'';position:absolute;left:0;top:0;width:36px;height:1px;background:var(--orange)}
+.cw{position:relative}
+
+/* GAUGE */
+.gw{display:flex;flex-direction:column;align-items:center}
+.gb{position:relative;width:156px;height:86px;margin:0 auto}
+.gc{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.gn{font-family:var(--fd);font-size:26px;font-weight:700;color:var(--orange);line-height:1}
+.gl{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2)}
+.gs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;width:100%}
+.gsc{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
+.gsv{font-family:var(--fd);font-size:18px;font-weight:700;line-height:1}
+.gsl{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted2);margin-top:3px}
+.mb{display:flex;flex-direction:column;gap:10px;margin-top:12px;width:100%}
+.mbh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.mbn{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.mbv{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--text)}
+.mbt{height:4px;background:var(--bg);border:1px solid var(--border);border-radius:99px;overflow:hidden}
+.mbf{height:100%;border-radius:99px;transition:width .6s ease}
+
+/* ANUAL banner */
+.anual-banner{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--orange10);border:1px solid var(--orange20);border-radius:10px;font-size:11px;font-weight:600;color:var(--orange)}
+.anual-banner svg{width:14px;height:14px;flex-shrink:0}
+
+/* FOOTER */
+.footer{position:relative;z-index:1;padding:10px 36px;border-top:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2)}
+.fl{display:flex;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+
+<svg class="wm" viewBox="0 0 1164 549" fill="none">
+  <path d="M0 330.524V547.706H219.897V437.758L111.306 330.524H0Z" fill="#FE5000"/>
+  <path d="M111.306 0V225.327L429.614 547.706H652.225V330.524L331.203 0H111.306Z" fill="#FE5000"/>
+  <path d="M622.363 0.678711V226.005L940.671 548.385H1163.28V331.203L842.26 0.678711H622.363Z" fill="#FE5000"/>
+</svg>
+
+<header class="header">
+  <a class="back" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    Clientes
+  </a>
+  <div class="hsep"></div>
+  <svg class="logo" viewBox="0 0 1164 549" fill="none">
+    <path d="M0 330.524V547.706H219.897V437.758L111.306 330.524H0Z" fill="#FE5000"/>
+    <path d="M111.306 0V225.327L429.614 547.706H652.225V330.524L331.203 0H111.306Z" fill="#FE5000"/>
+    <path d="M622.363 0.678711V226.005L940.671 548.385H1163.28V331.203L842.26 0.678711H622.363Z" fill="#FE5000"/>
+  </svg>
+  <div class="hsep"></div>
+  <div>
+    <div class="hclient" id="hClient">—</div>
+    <div class="hperiod" id="hPeriod">—</div>
+  </div>
+  <div class="hright">
+    <div class="view-toggle">
+      <button class="vtab active" id="vtabMensal" onclick="setView('mensal')">Mensal</button>
+      <button class="vtab" id="vtabAnual" onclick="setView('anual')">Anual</button>
+    </div>
+    <div class="live-pill"><div class="ldot"></div>Ao vivo</div>
+    <div class="mbadge" id="hBadge">—</div>
+  </div>
+</header>
+
+<div class="body" id="mainBody">
+
+  <!-- MONTH TABS (mensal only) -->
+  <div class="tabs-row" id="tabsRow" style="display:none">
+    <span class="tl">Mês</span>
+  </div>
+
+  <!-- ANUAL BANNER -->
+  <div class="anual-banner" id="anualBanner" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Visão anual — totais e médias acumuladas de todos os meses com dados
+  </div>
+
+  <!-- KPI ROW 1 -->
+  <div class="kpi-row">
+    <div class="kpi" style="--kc:#FE5000;--kbg:#FEF0EB">
+      <div class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="#FE5000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <div class="kl" id="lbl-meta">Meta</div>
+      <div class="kv" style="--kcolor:#FE5000" id="kpi-meta">—</div>
+      <div class="ks" id="sub-meta">Unidades · mês</div>
+    </div>
+    <div class="kpi" style="--kc:#16A34A;--kbg:#ECFDF5">
+      <div class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+      <div class="kl" id="lbl-vendas">Vendas</div>
+      <div class="kv" style="--kcolor:#16A34A" id="kpi-vendas">—</div>
+      <div class="ks" id="sub-vendas">Realizadas</div>
+    </div>
+    <div class="kpi" style="--kc:#FE5000;--kbg:#FEF0EB">
+      <div class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="#FE5000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div class="kl">Andamento</div>
+      <div class="kv" style="--kcolor:#FE5000" id="kpi-andamento">—</div>
+      <div class="ks" id="sub-andamento">Da meta atingida</div>
+    </div>
+    <div class="kpi" id="crescCard" style="--kc:#16A34A;--kbg:#ECFDF5">
+      <div class="ki" id="crescIcon"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="crescSvg"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+      <div class="kl" id="lbl-cresc">Crescimento</div>
+      <div class="kv" id="kpi-crescimento">—</div>
+      <div class="ks" id="sub-cresc">vs. mês anterior</div>
+    </div>
+  </div>
+
+  <!-- KPI ROW 2 -->
+  <div class="kpi-row">
+    <div class="kpi" style="--kc:#9CA3AF;--kbg:#F3F4F6">
+      <div class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+      <div class="kl" id="lbl-inv">Investimento</div>
+      <div class="kv sm" id="kpi-investimento">—</div>
+      <div class="ks" id="sub-inv">Total aplicado</div>
+    </div>
+    <div class="kpi" style="--kc:#16A34A;--kbg:#ECFDF5">
+      <div class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div class="kl" id="lbl-fat">Faturamento</div>
+      <div class="kv sm" style="--kcolor:#16A34A" id="kpi-faturamento">—</div>
+      <div class="ks" id="sub-fat">Receita gerada</div>
+    </div>
+    <div class="kpi" style="--kc:#FE5000;--kbg:#FEF0EB">
+      <div class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="#FE5000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></div>
+      <div class="kl">CAC</div>
+      <div class="kv sm" style="--kcolor:#FE5000" id="kpi-cac">—</div>
+      <div class="ks" id="sub-cac">Custo por venda</div>
+    </div>
+    <div class="kpi" style="--kc:#9CA3AF;--kbg:#F3F4F6">
+      <div class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+      <div class="kl">Ticket Médio</div>
+      <div class="kv sm" id="kpi-ticket">—</div>
+      <div class="ks">Por venda</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="chart-row">
+    <div class="panel">
+      <div class="ph"><div class="pt">Vendas por Mês</div><div class="ps" id="ps-vendas">2026 · unidades</div></div>
+      <div class="div"></div>
+      <div class="cw" style="height:175px"><canvas id="vendasChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="pt">Faturamento</div><div class="ps" id="ps-fat">2026 · em R$</div></div>
+      <div class="div"></div>
+      <div class="cw" style="height:175px"><canvas id="fatChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="pt">Performance</div><div class="ps" id="ps-perf">Andamento da meta</div></div>
+      <div class="div"></div>
+      <div class="gw">
+        <div class="gb">
+          <svg viewBox="0 0 156 86" width="156" height="86">
+            <path d="M8,78 A70,70 0 0,1 148,78" fill="none" stroke="#F0EFED" stroke-width="11" stroke-linecap="round"/>
+            <path id="gaugeArc" d="M8,78 A70,70 0 0,1 148,78" fill="none" stroke="#FE5000" stroke-width="11" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/>
+            <line x1="78" y1="8" x2="78" y2="18" stroke="#D4D4CF" stroke-width="1.5"/>
+          </svg>
+          <div class="gc">
+            <div class="gn" id="gaugePct">—</div>
+            <div class="gl" id="gaugeLabel">da meta</div>
+          </div>
+        </div>
+        <div class="gs">
+          <div class="gsc"><div class="gsv" style="color:#16A34A" id="gaugeV">—</div><div class="gsl" id="gaugeVL">Vendas</div></div>
+          <div class="gsc"><div class="gsv" style="color:#FE5000" id="gaugeM">—</div><div class="gsl" id="gaugeML">Meta</div></div>
+        </div>
+        <div class="mb">
+          <div><div class="mbh"><span class="mbn">ROI</span><span class="mbv" id="mbRoiV">—</span></div><div class="mbt"><div class="mbf" id="mbRoi" style="width:0%;background:#FE5000"></div></div></div>
+          <div><div class="mbh"><span class="mbn" id="mbCrescN">Crescimento</span><span class="mbv" id="mbCrescV">—</span></div><div class="mbt"><div class="mbf" id="mbCresc" style="width:0%;background:#16A34A"></div></div></div>
+          <div><div class="mbh"><span class="mbn">Meta atingida</span><span class="mbv" id="mbMetaV">—</span></div><div class="mbt"><div class="mbf" id="mbMeta" style="width:0%;background:#FE5000"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="fl">
+    <svg height="11" viewBox="0 0 1164 549" fill="none">
+      <path d="M0 330.524V547.706H219.897V437.758L111.306 330.524H0Z" fill="#FE5000"/>
+      <path d="M111.306 0V225.327L429.614 547.706H652.225V330.524L331.203 0H111.306Z" fill="#FE5000"/>
+      <path d="M622.363 0.678711V226.005L940.671 548.385H1163.28V331.203L842.26 0.678711H622.363Z" fill="#FE5000"/>
+    </svg>
+    Mindor · <span id="footerClient">—</span>
+  </div>
+  <span id="ts"></span>
+</footer>
+
+<script>
+/* ─── CONFIG ─────────────────────────────────────── */
+const CFG = {
+  'nm-multimarcas':  { name:'NM Multimarcas',  period:'Tráfego e Vendas · 2026', sheetId:'1gZ6AJtYBEvLgYh5poWkUPbJ2gcrejFW3qS8bUme7sjs' },
+  'queiroz-company': { name:'Queiroz Company', period:'Tráfego e Vendas · 2026', sheetId:'1nU0vWVGu6DtjGLY5lXdfiLiqIMz_nWU6-vv6-S9APNM' },
+  'jogador-caro':    { name:'Jogador Caro',    period:'Tráfego e Vendas · 2024', sheetId:'15x9ATXeXetsY8mJv9skPzKQlEqDBPc2-iXKWpjvYD9E' },
+  'gg-imports':      { name:'GG Imports',      period:'Tráfego e Vendas · 2025', sheetId:'1EajO0UX0QvgLLisLhTGMDmnDYUwld5qp_gTH7bbWrBI' },
+};
+
+/* ─── UTILS ──────────────────────────────────────── */
+function parseCSV(text){
+  return text.trim().split('\n').map(line=>{
+    const f=[];let q=false,s='';
+    for(const c of line){if(c==='"'){q=!q;continue}if(c===','&&!q){f.push(s.trim());s='';continue}s+=c}
+    f.push(s.trim());return f;
+  });
+}
+const parseBRL=s=>{if(!s)return 0;return parseFloat(s.replace('R$','').replace(/\./g,'').replace(',','.').trim())||0};
+const parsePct=s=>{if(!s)return 0;return parseFloat(s.replace('%','').replace(',','.').trim())||0};
+const fmtBRL=v=>{if(!v)return'—';const n=Math.round(v);return'R$'+n.toLocaleString('pt-BR')};
+const fmtPct=(v,str)=>{if(str&&str!=='0%'&&str!=='')return str;return Math.round(v)+'%'};
+const signStr=(v,str)=>{const p=parsePct(str||'');return p>0&&!str.startsWith('+')?'+'+str:str};
+
+/* ─── DETECT & NORMALIZE ─────────────────────────── */
+function normalize(rows){
+  const h=rows[0];
+  // Format A: header starts with "Aba"
+  if((h[0]||'').toLowerCase()==='aba') return normalizeA(rows);
+  return normalizeB(rows);
+}
+
+function normalizeA(rows){
+  const raw=rows.slice(1).filter(r=>r[0]&&r[0]!=='NÃO MEXER'&&r[0].trim()!==''&&parseInt(r[2])>0);
+  const months=raw.map(r=>({
+    mes:r[0], vendas:parseInt(r[2])||0,
+    investido:parseBRL(r[3]), cac:parseBRL(r[4]), faturamento:parseBRL(r[5]),
+    meta:parseInt(r[6])||100, andamento:parsePct(r[8]), andamentoStr:r[8]||'0%',
+    ticket:parseBRL(r[9]), crescimento:parsePct(r[10]), crescimentoStr:r[10]||'0%',
+  }));
+  const tv=months.reduce((s,r)=>s+r.vendas,0);
+  const tf=months.reduce((s,r)=>s+r.faturamento,0);
+  const ti=months.reduce((s,r)=>s+r.investido,0);
+  const metaM=months[0]?.meta||100;
+  const metaA=metaM*12;
+  const andA=metaA>0?tv/metaA*100:0;
+  const cresVals=months.slice(1).map(r=>r.crescimento).filter(v=>!isNaN(v));
+  const avgC=cresVals.length?cresVals.reduce((s,v)=>s+v,0)/cresVals.length:0;
+  return{
+    months,
+    annual:{
+      metaAnual:metaA, totalVendas:tv, totalFat:tf, totalInv:ti,
+      andamento:andA, andamentoStr:Math.round(andA)+'%',
+      avgCAC:tv>0?ti/tv:0, avgTicket:tv>0?tf/tv:0,
+      avgCresc:avgC, avgCrescStr:(avgC>=0?'+':'')+Math.round(avgC)+'%',
+    }
+  };
+}
+
+function normalizeB(rows){
+  const kpis={meta:0,realizado:0,andamento:0,andamentoStr:'0%'};
+  const months=[];let totalRow=null;
+  for(const r of rows.slice(1)){
+    const mes=(r[1]||'').trim();if(!mes)continue;
+    const k=(r[10]||'').trim();
+    if(k==='META')kpis.meta=parseInt(r[11])||0;
+    if(k==='REALIZADO')kpis.realizado=parseInt(r[11])||0;
+    if(k==='ANDAMENTO'){kpis.andamentoStr=r[11]||'0%';kpis.andamento=parsePct(r[11]);}
+    if(mes==='TOTAL'){totalRow=r;continue;}
+    if(parseInt(r[2])>0||parseBRL(r[7])>0){
+      const v=parseInt(r[2])||0,f=parseBRL(r[7]);
+      months.push({
+        mes, vendas:v, investido:parseBRL(r[5]), cac:parseBRL(r[6]),
+        faturamento:f, meta:0, andamento:0, andamentoStr:'—',
+        ticket:v>0?f/v:0, crescimento:parsePct(r[3]), crescimentoStr:r[3]||'0%',
+      });
+    }
+  }
+  const tv=totalRow?parseInt(totalRow[2])||0:months.reduce((s,r)=>s+r.vendas,0);
+  const tf=totalRow?parseBRL(totalRow[7]):months.reduce((s,r)=>s+r.faturamento,0);
+  const ti=totalRow?parseBRL(totalRow[5]):months.reduce((s,r)=>s+r.investido,0);
+  const avgCAC=totalRow?parseBRL(totalRow[6]):(tv>0?ti/tv:0);
+  const cresVals=months.slice(1).map(r=>r.crescimento).filter(v=>!isNaN(v)&&v!==0);
+  const avgC=cresVals.length?cresVals.reduce((s,v)=>s+v,0)/cresVals.length:0;
+  return{
+    months,
+    annual:{
+      metaAnual:kpis.meta, totalVendas:tv, totalFat:tf, totalInv:ti,
+      andamento:kpis.andamento, andamentoStr:kpis.andamentoStr,
+      avgCAC, avgTicket:tv>0?tf/tv:0,
+      avgCresc:avgC, avgCrescStr:(avgC>=0?'+':'')+Math.round(avgC)+'%',
+    }
+  };
+}
+
+/* ─── CHARTS ─────────────────────────────────────── */
+Chart.defaults.color='#9CA3AF';
+Chart.defaults.borderColor='rgba(0,0,0,.05)';
+Chart.defaults.font.family="'Outfit',sans-serif";
+Chart.defaults.font.size=11;Chart.defaults.font.weight='500';
+const TIP={backgroundColor:'#fff',titleColor:'#0F0F0E',bodyColor:'#6B7280',borderColor:'#E8E8E5',borderWidth:1,padding:10,cornerRadius:8};
+let vChart,fChart;
+
+function buildCharts(months,ai){
+  const labels=months.map(r=>r.mes);
+  const vendas=months.map(r=>r.vendas);
+  const fat=months.map(r=>r.faturamento);
+  const vBg=months.map((_,i)=>i===ai?'#FE5000':'rgba(254,80,0,.1)');
+  const vBd=months.map((_,i)=>i===ai?'#FE5000':'rgba(254,80,0,.25)');
+  const fBg=months.map((_,i)=>i===ai?'#16A34A':'rgba(22,163,74,.1)');
+  const fBd=months.map((_,i)=>i===ai?'#16A34A':'rgba(22,163,74,.25)');
+  if(vChart)vChart.destroy();if(fChart)fChart.destroy();
+  vChart=new Chart(document.getElementById('vendasChart'),{type:'bar',data:{labels,datasets:[{data:vendas,backgroundColor:vBg,borderColor:vBd,borderWidth:1.5,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TIP,callbacks:{label:c=>' '+c.parsed.y+' vendas'}}},scales:{x:{grid:{display:false},ticks:{color:'#9CA3AF'}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#9CA3AF'},beginAtZero:true}}}});
+  fChart=new Chart(document.getElementById('fatChart'),{type:'bar',data:{labels,datasets:[{data:fat,backgroundColor:fBg,borderColor:fBd,borderWidth:1.5,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TIP,callbacks:{label:c=>' R$'+c.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:0})}}},scales:{x:{grid:{display:false},ticks:{color:'#9CA3AF'}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#9CA3AF',callback:v=>'R$'+Math.round(v/1000)+'k'},beginAtZero:true}}}});
+}
+
+/* ─── RENDER ─────────────────────────────────────── */
+function setGauge(pct,str,vendas,meta){
+  const cap=Math.min(pct,100);
+  document.getElementById('gaugeArc').setAttribute('stroke-dashoffset',220*(1-cap/100));
+  document.getElementById('gaugePct').textContent=str;
+  document.getElementById('gaugeV').textContent=vendas>=1000?(vendas/1000).toFixed(1)+'k':vendas;
+  document.getElementById('gaugeM').textContent=meta>=1000?(meta/1000).toFixed(0)+'k':meta;
+}
+function setMiniBar(roi,cresc,crescStr,and){
+  const rc=cresc>=0?'#16A34A':'#DC2626';
+  document.getElementById('mbRoiV').textContent=roi>0?roi.toFixed(1)+'x':'—';
+  document.getElementById('mbRoi').style.width=Math.min(roi/15*100,100)+'%';
+  document.getElementById('mbCrescV').textContent=crescStr;
+  document.getElementById('mbCrescV').style.color=rc;
+  document.getElementById('mbCresc').style.width=Math.min(Math.abs(cresc),100)+'%';
+  document.getElementById('mbCresc').style.background=rc;
+  document.getElementById('mbMetaV').textContent=Math.round(and)+'%';
+  document.getElementById('mbMeta').style.width=Math.min(and,100)+'%';
+}
+function setCrescCard(val,str){
+  const pos=val>=0;
+  const color=pos?'#16A34A':'#DC2626';
+  const kc=pos?'#16A34A':'#DC2626';
+  const bg=pos?'#ECFDF5':'#FEF2F2';
+  document.getElementById('kpi-crescimento').textContent=str;
+  document.getElementById('kpi-crescimento').style.color=color;
+  document.getElementById('crescCard').style.setProperty('--kc',kc);
+  document.getElementById('crescCard').style.setProperty('--kbg',bg);
+  document.getElementById('crescSvg').setAttribute('stroke',color);
+}
+
+function renderMensal(data,ai){
+  const r=data.months[ai];
+  const yr=data.cfg?.period?.slice(-4)||'';
+  document.getElementById('hBadge').textContent=r.mes+' '+yr;
+  document.getElementById('ps-vendas').textContent=yr+' · unidades';
+  document.getElementById('ps-fat').textContent=yr+' · em R$';
+  document.getElementById('ps-perf').textContent='Andamento mensal';
+  document.getElementById('gaugeLabel').textContent='da meta';
+  document.getElementById('gaugeVL').textContent='Vendas';
+  document.getElementById('gaugeML').textContent='Meta';
+  // labels
+  document.getElementById('lbl-meta').textContent='Meta de Vendas';
+  document.getElementById('sub-meta').textContent='Unidades · mês';
+  document.getElementById('lbl-vendas').textContent='Vendas';
+  document.getElementById('sub-vendas').textContent='Realizadas · mês';
+  document.getElementById('sub-andamento').textContent='Da meta atingida';
+  document.getElementById('lbl-cresc').textContent='Crescimento';
+  document.getElementById('sub-cresc').textContent='vs. mês anterior';
+  document.getElementById('lbl-inv').textContent='Investimento';
+  document.getElementById('sub-inv').textContent='Total aplicado';
+  document.getElementById('lbl-fat').textContent='Faturamento';
+  document.getElementById('sub-fat').textContent='Receita gerada';
+  document.getElementById('sub-cac').textContent='Custo por venda';
+  document.getElementById('mbCrescN').textContent='Crescimento';
+  // values
+  document.getElementById('kpi-meta').textContent=r.meta||'—';
+  document.getElementById('kpi-vendas').textContent=r.vendas;
+  document.getElementById('kpi-andamento').textContent=r.andamentoStr;
+  document.getElementById('kpi-investimento').textContent=fmtBRL(r.investido);
+  document.getElementById('kpi-faturamento').textContent=fmtBRL(r.faturamento);
+  document.getElementById('kpi-cac').textContent=r.cac?fmtBRL(r.cac):'—';
+  document.getElementById('kpi-ticket').textContent=r.ticket?fmtBRL(r.ticket):'—';
+  setCrescCard(r.crescimento,signStr(r.crescimento,r.crescimentoStr));
+  setGauge(r.andamento,r.andamentoStr,r.vendas,r.meta||100);
+  const roi=r.investido>0?r.faturamento/r.investido:0;
+  setMiniBar(roi,r.crescimento,signStr(r.crescimento,r.crescimentoStr),r.andamento);
+}
+
+function renderAnual(data){
+  const a=data.annual;
+  const yr=data.cfg?.period?.slice(-4)||'';
+  document.getElementById('hBadge').textContent='Anual · '+yr;
+  document.getElementById('ps-vendas').textContent=yr+' · todos os meses';
+  document.getElementById('ps-fat').textContent=yr+' · em R$';
+  document.getElementById('ps-perf').textContent='Andamento anual';
+  document.getElementById('gaugeLabel').textContent='meta anual';
+  document.getElementById('gaugeVL').textContent='Total';
+  document.getElementById('gaugeML').textContent='Meta';
+  // labels
+  document.getElementById('lbl-meta').textContent='Meta Anual';
+  document.getElementById('sub-meta').textContent='Unidades · ano';
+  document.getElementById('lbl-vendas').textContent='Total Vendas';
+  document.getElementById('sub-vendas').textContent='Realizadas · ano';
+  document.getElementById('sub-andamento').textContent='Da meta anual';
+  document.getElementById('lbl-cresc').textContent='Cresc. Médio';
+  document.getElementById('sub-cresc').textContent='Média mensal MoM';
+  document.getElementById('lbl-inv').textContent='Invest. Total';
+  document.getElementById('sub-inv').textContent='Acumulado anual';
+  document.getElementById('lbl-fat').textContent='Fat. Total';
+  document.getElementById('sub-fat').textContent='Acumulado anual';
+  document.getElementById('sub-cac').textContent='Média por venda';
+  document.getElementById('mbCrescN').textContent='Cresc. Médio';
+  // values
+  const tv=a.totalVendas,tf=a.totalFat,ti=a.totalInv;
+  document.getElementById('kpi-meta').textContent=a.metaAnual?a.metaAnual.toLocaleString('pt-BR'):'—';
+  document.getElementById('kpi-vendas').textContent=tv>=1000?(tv/1000).toFixed(1)+'k':tv;
+  document.getElementById('kpi-andamento').textContent=a.andamentoStr;
+  document.getElementById('kpi-investimento').textContent=fmtBRL(ti);
+  document.getElementById('kpi-faturamento').textContent=fmtBRL(tf);
+  document.getElementById('kpi-cac').textContent=a.avgCAC?fmtBRL(a.avgCAC):'—';
+  document.getElementById('kpi-ticket').textContent=a.avgTicket?fmtBRL(a.avgTicket):'—';
+  setCrescCard(a.avgCresc,a.avgCrescStr);
+  setGauge(a.andamento,a.andamentoStr,tv,a.metaAnual||0);
+  const roi=ti>0?tf/ti:0;
+  setMiniBar(roi,a.avgCresc,a.avgCrescStr,a.andamento);
+}
+
+/* ─── TABS ───────────────────────────────────────── */
+let DATA=null,AI=0,VIEW='mensal';
+function renderTabs(){
+  const row=document.getElementById('tabsRow');
+  row.innerHTML='<span class="tl">Mês</span>';
+  DATA.months.forEach((r,i)=>{
+    const b=document.createElement('button');
+    b.className='mtab'+(i===AI?' active':'');
+    b.textContent=r.mes;
+    b.onclick=()=>{AI=i;renderTabs();renderMensal(DATA,AI);buildCharts(DATA.months,AI)};
+    row.appendChild(b);
+  });
+}
+
+/* ─── VIEW SWITCH ────────────────────────────────── */
+function setView(v){
+  VIEW=v;
+  document.getElementById('vtabMensal').classList.toggle('active',v==='mensal');
+  document.getElementById('vtabAnual').classList.toggle('active',v==='anual');
+  document.getElementById('tabsRow').style.display=v==='mensal'?'flex':'none';
+  document.getElementById('anualBanner').style.display=v==='anual'?'flex':'none';
+  if(!DATA)return;
+  if(v==='mensal'){
+    renderMensal(DATA,AI);
+    buildCharts(DATA.months,AI);
+  }else{
+    renderAnual(DATA);
+    buildCharts(DATA.months,-1); // no highlight in anual
+  }
+}
+
+/* ─── INIT ───────────────────────────────────────── */
+async function init(){
+  const params=new URLSearchParams(location.search);
+  const id=params.get('client');
+  const cfg=CFG[id];
+  if(!cfg){document.getElementById('hClient').textContent='Cliente não encontrado';return;}
+  document.getElementById('hClient').textContent=cfg.name;
+  document.getElementById('hPeriod').textContent=cfg.period;
+  document.getElementById('footerClient').textContent=cfg.name;
+  const res=await fetch(`https://docs.google.com/spreadsheets/d/${cfg.sheetId}/gviz/tq?tqx=out:csv&sheet=RESUMO`);
+  const text=await res.text();
+  const rows=parseCSV(text);
+  DATA=normalize(rows);
+  DATA.cfg=cfg;
+  AI=DATA.months.length-1;
+  renderTabs();
+  setView('mensal');
+}
+init();
+function tick(){const n=new Date();document.getElementById('ts').textContent=n.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+n.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+tick();setInterval(tick,60000);
+</script>
+</body>
+</html>
