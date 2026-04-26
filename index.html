@@ -163,7 +163,10 @@ function fmtNum(v){if(!v)return'—';return v>=1000?(v/1000).toFixed(1)+'k':Stri
 
 async function getCardData(client){
   try{
-    const res=await fetch(`https://docs.google.com/spreadsheets/d/${client.sheetId}/gviz/tq?tqx=out:csv&sheet=RESUMO`);
+    const ctrl=new AbortController();
+    const timer=setTimeout(()=>ctrl.abort(),8000);
+    const res=await fetch(`https://docs.google.com/spreadsheets/d/${client.sheetId}/gviz/tq?tqx=out:csv&sheet=RESUMO`,{signal:ctrl.signal});
+    clearTimeout(timer);
     const text=await res.text();
     const rows=parseCSV(text);
     const isA=(rows[0][0]||'').toLowerCase()==='aba';
@@ -247,13 +250,12 @@ async function init(){
     grid.appendChild(card);
   });
 
-  // fetch all in parallel then replace
-  const results = await Promise.all(CLIENTS.map(c=>getCardData(c)));
-  CLIENTS.forEach((c,i)=>{
-    const el=document.getElementById(`card-${c.id}`);
-    if(el&&results[i]){
-      el.replaceWith(buildCard(c,results[i]));
-    }
+  // fetch each independently — update card as soon as it resolves
+  CLIENTS.forEach(c=>{
+    getCardData(c).then(data=>{
+      const el=document.getElementById(`card-${c.id}`);
+      if(el) el.replaceWith(buildCard(c,data));
+    });
   });
 }
 
