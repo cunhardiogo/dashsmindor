@@ -38,7 +38,7 @@ body{display:flex;flex-direction:column;min-height:100vh}
 .page-title{font-family:var(--f-display);font-size:26px;font-weight:700;color:var(--text);margin-bottom:4px}
 .page-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
 
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 
 .card{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
@@ -129,10 +129,25 @@ body{display:flex;flex-direction:column;min-height:100vh}
 
 <script>
 const CLIENTS = [
-  { id:'nm-multimarcas',   name:'NM Multimarcas',   initials:'NM', color:'#FE5000', period:'Tráfego e Vendas · 2026', sheetId:'1gZ6AJtYBEvLgYh5poWkUPbJ2gcrejFW3qS8bUme7sjs', type:'A' },
-  { id:'queiroz-company',  name:'Queiroz Company',   initials:'QC', color:'#16A34A', period:'Tráfego e Vendas · 2026', sheetId:'1nU0vWVGu6DtjGLY5lXdfiLiqIMz_nWU6-vv6-S9APNM', type:'A' },
-  { id:'jogador-caro',     name:'Jogador Caro',      initials:'JC', color:'#2563EB', period:'Tráfego e Vendas · 2024', sheetId:'15x9ATXeXetsY8mJv9skPzKQlEqDBPc2-iXKWpjvYD9E', type:'B' },
-  { id:'gg-imports',       name:'GG Imports',        initials:'GG', color:'#7C3AED', period:'Tráfego e Vendas · 2025', sheetId:'1EajO0UX0QvgLLisLhTGMDmnDYUwld5qp_gTH7bbWrBI', type:'B' },
+  { id:'nm-multimarcas', name:'NM Multimarcas',      initials:'NM', color:'#FE5000', period:'Tráfego e Vendas · 2026', sheetId:'1gZ6AJtYBEvLgYh5poWkUPbJ2gcrejFW3qS8bUme7sjs' },
+  { id:'queiroz',        name:'Queiroz',              initials:'QZ', color:'#16A34A', period:'Tráfego e Vendas · 2026', sheetId:'1nU0vWVGu6DtjGLY5lXdfiLiqIMz_nWU6-vv6-S9APNM' },
+  { id:'jogador-caro',   name:'Jogador Caro',         initials:'JC', color:'#2563EB', period:'Tráfego e Vendas · 2024', sheetId:'15x9ATXeXetsY8mJv9skPzKQlEqDBPc2-iXKWpjvYD9E' },
+  { id:'gg-imports',     name:'GG Imports',           initials:'GG', color:'#7C3AED', period:'Tráfego e Vendas · 2025', sheetId:'1EajO0UX0QvgLLisLhTGMDmnDYUwld5qp_gTH7bbWrBI' },
+  { id:'2m',             name:'2M',                   initials:'2M', color:'#0891B2', period:'Tráfego e Vendas · 2026', sheetId:'1zj6jp51hYtLtNoJxuGS0eacszVRXZeOUgGqe5XiJqQo' },
+  { id:'bl-multimarcas', name:'BL Multimarcas',       initials:'BL', color:'#D97706', period:'Tráfego e Vendas · 2026', sheetId:'1OgppJhCANv6Nf3A962eAcUNPIkMI65_xpV4AvhvQzJs' },
+  { id:'chefao',         name:'Chefão',               initials:'CH', color:'#DB2777', period:'Tráfego e Vendas · 2026', sheetId:'1ftgKL6ffQNM_ArTmYxk4i7hSGGOYl-mad7icGveUVXY' },
+  { id:'deck',           name:'Deck',                 initials:'DK', color:'#059669', period:'Tráfego e Vendas · 2026', sheetId:'1v9VlERjS9dqKQGQCdl9R2wxAKwkeiva3W7KuDR3kZmI' },
+  { id:'dichava',        name:'Dichava',              initials:'DI', color:'#DC2626', period:'Tráfego e Vendas · 2026', sheetId:'161CVdRMNKyg69CyqQnzPzJM1I2VmoM6hQ5lv5npaX4M' },
+  { id:'fv',             name:'FV',                   initials:'FV', color:'#0284C7', period:'Tráfego e Vendas · 2026', sheetId:'1_5_xhDKT2Tn0rSSfvoYGpWrGqgBzqFXi6U5wIGLX6C8' },
+  { id:'grow-for-firl',  name:'Grow for Firl',        initials:'GF', color:'#65A30D', period:'Tráfego e Vendas · 2026', sheetId:'1QE6xj6hv4OhnQIMlqhQC2lWpKkR_eTaN98lIKt5Yzuc' },
+  { id:'iphones-deyse',  name:'Iphones/Lupas Deyse',  initials:'ID', color:'#9333EA', period:'Tráfego e Vendas · 2026', sheetId:'1jCDlrkFWYLF4KRH4EGsiCojfw2RmzaReUUPhzYopnqU' },
+  { id:'mv-imports',     name:'MV Imports',           initials:'MV', color:'#EA580C', period:'Tráfego e Vendas · 2026', sheetId:'1gDrJe2PRQj64-C0DsgMxq4Jjtl_0d5r2WjTIfzn2QNo' },
+  { id:'magnata',        name:'Magnata',              initials:'MG', color:'#0D9488', period:'Tráfego e Vendas · 2026', sheetId:'12vexNewtc3Mf7Z5o5hOwN4ge7PyiH8Yv2BHUfkwvSO8' },
+  { id:'mundo-iphone',   name:'Mundo iPhone',         initials:'MI', color:'#4F46E5', period:'Tráfego e Vendas · 2026', sheetId:'1Ol8IsHpcBMWo5W4UhBMjpIzFYo5wKMaFvg9lj0-CeAw' },
+  { id:'new-imports',    name:'New Imports',          initials:'NI', color:'#B45309', period:'Tráfego e Vendas · 2026', sheetId:'1mjp3F0utbnWaRBBC6cX-j4h-phLvf1Qpq_HTC44CXXQ' },
+  { id:'style-store',    name:'Style Store',          initials:'SS', color:'#0F766E', period:'Tráfego e Vendas · 2026', sheetId:'1k_0pH33_pjuvqJh2gvZoquNmduVO-_UYauHdEF-39m4' },
+  { id:'theo',           name:'Theo',                 initials:'TH', color:'#1D4ED8', period:'Tráfego e Vendas · 2026', sheetId:'1G69pLmj5I_ck7PEeaoM3-SxuuSIjhbno8cSvXt_yQmo' },
+  { id:'zero-grau',      name:'Zero Grau',            initials:'ZG', color:'#166534', period:'Tráfego e Vendas · 2026', sheetId:'10RKxzkPyMjCgjq58CU-sMsKGvPISbhcptpsGbkvlZMw' },
 ];
 
 function parseCSV(text){
@@ -151,7 +166,8 @@ async function getCardData(client){
     const res=await fetch(`https://docs.google.com/spreadsheets/d/${client.sheetId}/gviz/tq?tqx=out:csv&sheet=RESUMO`);
     const text=await res.text();
     const rows=parseCSV(text);
-    if(client.type==='A'){
+    const isA=(rows[0][0]||'').toLowerCase()==='aba';
+    if(isA){
       const months=rows.slice(1).filter(r=>r[0]&&r[0]!=='NÃO MEXER'&&r[0].trim()&&parseInt(r[2])>0);
       if(!months.length)return null;
       const last=months[months.length-1];
